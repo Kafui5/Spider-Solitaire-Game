@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Adaptive Icon Foreground: Gold spade symbol centered in safe zone -->
+  <!-- Safe zone for adaptive icons is 66% of the total area (center 672x672 of 1024x1024) -->
+  <defs>
+    <linearGradient id="spadeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#F3D58F"/>
+      <stop offset="50%" style="stop-color:#E6B95C"/>
+      <stop offset="100%" style="stop-color:#C69A3A"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  
+  <!-- Spade shape - large centered -->
+  <g transform="translate(512, 480)" filter="url(#shadow)">
+    <!-- Main spade body -->
+    <path d="M0,-220 
+             C-20,-220 -160,-120 -160,20 
+             C-160,120 -80,180 0,140 
+             C80,180 160,120 160,20 
+             C160,-120 20,-220 0,-220 Z" 
+          fill="url(#spadeGrad)"/>
+    <!-- Spade stem -->
+    <rect x="-24" y="100" width="48" height="120" rx="8" fill="url(#spadeGrad)"/>
+    <!-- Stem base -->
+    <ellipse cx="0" cy="220" rx="60" ry="20" fill="url(#spadeGrad)"/>
+  </g>
+  
+  <!-- Subtle silk thread accent lines -->
+  <g stroke="#F3D58F" stroke-width="1.5" opacity="0.3" fill="none">
+    <circle cx="512" cy="480" r="280"/>
+    <circle cx="512" cy="480" r="300"/>
+  </g>
+</svg>

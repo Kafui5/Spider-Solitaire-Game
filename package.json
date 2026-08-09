@@ -1,0 +1,35 @@
+{
+  "name": "silk-spider-solitaire",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test src/game/gameEngine.test.ts src/game/statistics.test.ts src/game/dailyChallenge.test.ts src/game/rewards.test.ts src/game/mastery.test.ts src/game/achievements.test.ts"
+  },
+  "dependencies": {
+    "@expo/metro-runtime": "^57.0.8",
+    "@react-native-async-storage/async-storage": "^3.1.1",
+    "expo": "^57.0.11",
+    "expo-av": "^16.0.8",
+    "expo-haptics": "~57.0.1",
+    "expo-status-bar": "^57.0.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-native": "^0.86.2",
+    "react-native-gesture-handler": "~2.32.0",
+    "react-native-iap": "^16.1.0",
+    "react-native-reanimated": "4.5.1",
+    "react-native-svg": "15.15.4",
+    "react-native-web": "^0.21.2"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "@types/react": "^19.2.18",
+    "typescript": "^5.9.3"
+  }
+}

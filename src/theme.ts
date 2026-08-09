@@ -1,0 +1,17 @@
+export const colors = {
+  ink: '#07130F',
+  background: '#071D18',
+  felt: '#0D3B2E',
+  feltLight: '#12513E',
+  gold: '#E6B95C',
+  goldSoft: '#F3D58F',
+  clay: '#C96842',
+  indigo: '#293261',
+  cream: '#FFF8E9',
+  paper: '#FFFDF6',
+  muted: '#AFC8BE',
+  white: '#FFFFFF',
+  red: '#B5313C',
+  black: '#17201C',
+  success: '#73D2A1',
+};

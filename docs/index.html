@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Silk Spider Solitaire — A classic, rewoven</title>
+  <meta name="description" content="Beautiful, offline Spider Solitaire. No ads, no subscriptions. Play the Daily Loom and challenge your friends.">
+  <meta property="og:title" content="Silk Spider Solitaire">
+  <meta property="og:description" content="A calm, beautiful Spider Solitaire. No ads. Works offline. Daily challenges.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://silkspider.app">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♠</text></svg>">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #071D18;
+      --felt: #0D3B2E;
+      --gold: #E6B95C;
+      --gold-soft: #F3D58F;
+      --cream: #FFF8E9;
+      --muted: #AFC8BE;
+      --clay: #C96842;
+      --indigo: #293261;
+    }
+    body {
+      background: var(--bg);
+      color: var(--cream);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .kente { display: flex; height: 5px; }
+    .kente div { flex: 1; }
+    .container { max-width: 680px; margin: 0 auto; padding: 40px 24px 80px; }
+    .hero { text-align: center; margin-bottom: 48px; }
+    .icon { font-size: 64px; margin-bottom: 12px; }
+    h1 { font-size: 42px; font-weight: 900; letter-spacing: 1px; }
+    .subtitle { color: var(--muted); font-size: 18px; letter-spacing: 6px; text-transform: uppercase; margin-top: 4px; }
+    .tagline { color: var(--gold); font-size: 14px; letter-spacing: 2px; margin-top: 16px; font-weight: 600; }
+    .download-btn {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--bg);
+      padding: 16px 36px;
+      border-radius: 14px;
+      font-size: 18px;
+      font-weight: 900;
+      text-decoration: none;
+      margin-top: 28px;
+      transition: transform 0.15s, filter 0.15s;
+    }
+    .download-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+    .features { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 40px 0; }
+    .feature {
+      background: var(--felt);
+      border: 1px solid rgba(230,185,92,0.15);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .feature-icon { font-size: 24px; margin-bottom: 8px; }
+    .feature-title { font-weight: 800; font-size: 14px; margin-bottom: 4px; }
+    .feature-desc { color: var(--muted); font-size: 13px; }
+    .daily-section {
+      background: var(--felt);
+      border: 1px solid var(--gold);
+      border-radius: 16px;
+      padding: 28px;
+      text-align: center;
+      margin: 40px 0;
+    }
+    .daily-title { color: var(--gold); font-size: 12px; font-weight: 800; letter-spacing: 2px; margin-bottom: 8px; }
+    .daily-body { font-size: 16px; }
+    .privacy-section { margin-top: 48px; padding-top: 32px; border-top: 1px solid rgba(230,185,92,0.15); }
+    .privacy-section h2 { font-size: 18px; margin-bottom: 12px; color: var(--gold); }
+    .privacy-section p { color: var(--muted); font-size: 14px; margin-bottom: 12px; }
+    .privacy-section ul { color: var(--muted); font-size: 14px; list-style: none; padding: 0; }
+    .privacy-section li::before { content: "✓ "; color: var(--gold); }
+    .privacy-section li { margin-bottom: 6px; }
+    footer { text-align: center; margin-top: 48px; color: var(--muted); font-size: 12px; opacity: 0.7; }
+    footer a { color: var(--gold); text-decoration: none; }
+    @media (max-width: 500px) {
+      .features { grid-template-columns: 1fr; }
+      h1 { font-size: 32px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="kente">
+    <div style="background: var(--gold)"></div>
+    <div style="background: var(--clay)"></div>
+    <div style="background: var(--indigo)"></div>
+    <div style="background: var(--gold)"></div>
+    <div style="background: var(--clay)"></div>
+  </div>
+
+  <div class="container">
+    <div class="hero">
+      <div class="icon">♠</div>
+      <h1>Silk Spider</h1>
+      <div class="subtitle">Solitaire</div>
+      <p class="tagline">A CLASSIC, REWOVEN</p>
+      <a href="https://play.google.com/store/apps/details?id=com.greenmidori.silkspider" class="download-btn">
+        Download on Google Play
+      </a>
+    </div>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">🚫</div>
+        <div class="feature-title">No Ads. Ever.</div>
+        <div class="feature-desc">No banners, no interstitials, no tracking. Just cards.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📴</div>
+        <div class="feature-title">Works Offline</div>
+        <div class="feature-desc">Play anywhere — no internet required for gameplay.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🎯</div>
+        <div class="feature-title">Three Difficulty Modes</div>
+        <div class="feature-desc">Calm (1 suit), Clever (2 suits), Master (4 suits).</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">☀️</div>
+        <div class="feature-title">Daily Loom</div>
+        <div class="feature-desc">Same deal for everyone. Share your result, challenge friends.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🧵</div>
+        <div class="feature-title">Earn & Unlock</div>
+        <div class="feature-desc">Silk Threads, mastery ranks, achievements — all without paying.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🎨</div>
+        <div class="feature-title">Beautiful Design</div>
+        <div class="feature-desc">Original woven aesthetic. Dark green, gold, and silk.</div>
+      </div>
+    </div>
+
+    <div class="daily-section">
+      <div class="daily-title">☀️ TODAY'S DAILY LOOM</div>
+      <div class="daily-body">A new challenge every day. Everyone gets the same cards.<br>Can you beat your friends?</div>
+    </div>
+
+    <div class="privacy-section">
+      <h2>Privacy</h2>
+      <p>Silk Spider Solitaire respects your privacy absolutely.</p>
+      <ul>
+        <li>No personal data collected</li>
+        <li>No analytics or tracking</li>
+        <li>No advertisements</li>
+        <li>No account required</li>
+        <li>All game data stays on your device</li>
+        <li>Internet used only for optional purchases</li>
+      </ul>
+      <p><a href="/privacy">Read full privacy policy →</a></p>
+    </div>
+
+    <footer>
+      <p>Made by Green Midori · <a href="mailto:support@greenmidori.com">Contact</a></p>
+      <p style="margin-top: 8px;">© 2026 Green Midori. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <div class="kente" style="position: fixed; bottom: 0; left: 0; right: 0;">
+    <div style="background: var(--clay)"></div>
+    <div style="background: var(--gold)"></div>
+    <div style="background: var(--indigo)"></div>
+    <div style="background: var(--gold)"></div>
+    <div style="background: var(--clay)"></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Standard app icon: Dark green background with gold spade -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0D3B2E"/>
+      <stop offset="100%" style="stop-color:#071D18"/>
+    </linearGradient>
+    <linearGradient id="spadeGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#F3D58F"/>
+      <stop offset="50%" style="stop-color:#E6B95C"/>
+      <stop offset="100%" style="stop-color:#C69A3A"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1024" height="1024" rx="180" fill="url(#bg)"/>
+  
+  <!-- Subtle web pattern in background -->
+  <g stroke="#E6B95C" stroke-width="0.8" opacity="0.12" fill="none">
+    <circle cx="512" cy="512" r="120"/>
+    <circle cx="512" cy="512" r="200"/>
+    <circle cx="512" cy="512" r="300"/>
+    <circle cx="512" cy="512" r="400"/>
+    <line x1="512" y1="112" x2="512" y2="912"/>
+    <line x1="112" y1="512" x2="912" y2="512"/>
+    <line x1="229" y1="229" x2="795" y2="795"/>
+    <line x1="795" y1="229" x2="229" y2="795"/>
+  </g>
+  
+  <!-- Kente line at top -->
+  <rect x="100" y="80" width="180" height="6" rx="3" fill="#E6B95C"/>
+  <rect x="290" y="80" width="140" height="6" rx="3" fill="#C96842"/>
+  <rect x="440" y="80" width="140" height="6" rx="3" fill="#293261"/>
+  <rect x="590" y="80" width="140" height="6" rx="3" fill="#E6B95C"/>
+  <rect x="740" y="80" width="180" height="6" rx="3" fill="#C96842"/>
+  
+  <!-- Spade shape - centered -->
+  <g transform="translate(512, 490)" filter="url(#glow)">
+    <path d="M0,-240 
+             C-20,-240 -180,-130 -180,30 
+             C-180,140 -90,200 0,155 
+             C90,200 180,140 180,30 
+             C180,-130 20,-240 0,-240 Z" 
+          fill="url(#spadeGold)"/>
+    <rect x="-28" y="110" width="56" height="130" rx="10" fill="url(#spadeGold)"/>
+    <ellipse cx="0" cy="240" rx="65" ry="22" fill="url(#spadeGold)"/>
+  </g>
+  
+  <!-- "SILK" text at bottom -->
+  <text x="512" y="880" font-family="sans-serif" font-size="64" font-weight="900" 
+        fill="#FFF8E9" text-anchor="middle" letter-spacing="12" opacity="0.9">
+    SILK
+  </text>
+</svg>
