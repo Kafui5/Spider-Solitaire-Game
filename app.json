@@ -6,9 +6,7 @@
     "orientation": "default",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#071D18",
-    "icon": "./assets/icon.png",
     "splash": {
-      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#071D18"
     },
@@ -16,10 +14,9 @@
       "package": "com.greenmidori.silkspider",
       "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#071D18"
       },
-      "permissions": [],
+      "permissions": []
     },
     "ios": {
       "supportsTablet": true,
@@ -28,16 +25,7 @@
     "web": {
       "bundler": "metro"
     },
-    "plugins": [
-      [
-        "expo-splash-screen",
-        {
-          "backgroundColor": "#071D18",
-          "image": "./assets/splash.png",
-          "imageWidth": 200
-        }
-      ]
-    ],
+    "plugins": [],
     "extra": {
       "eas": {
         "projectId": "YOUR_EAS_PROJECT_ID"

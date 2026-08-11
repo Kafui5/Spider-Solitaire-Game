@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { rankLabel, suitSymbol, type Card } from '../game/gameEngine';
 import { colors } from '../theme';

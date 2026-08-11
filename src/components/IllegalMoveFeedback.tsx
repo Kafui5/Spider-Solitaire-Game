@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useEffect, useRef } from 'react';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -7,12 +6,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { colors } from '../theme';
-
 interface IllegalMoveFeedbackProps {
-  /** Column index where the illegal drop happened, or null if no feedback */
   column: number | null;
-  /** Board layout info */
   columnLeft: (col: number) => number;
   columnWidth: number;
   boardHeight: number;
@@ -28,11 +23,15 @@ export function IllegalMoveFeedback({
 }: IllegalMoveFeedbackProps) {
   const shakeX = useSharedValue(0);
   const flashOpacity = useSharedValue(0);
+  const lastColumn = useRef<number>(0);
+
+  if (column !== null) {
+    lastColumn.current = column;
+  }
 
   useEffect(() => {
     if (column === null) return;
 
-    // Shake animation
     shakeX.value = withSequence(
       withTiming(6, { duration: 50 }),
       withTiming(-6, { duration: 50 }),
@@ -42,25 +41,20 @@ export function IllegalMoveFeedback({
       withTiming(0, { duration: 50 }),
     );
 
-    // Red flash
     flashOpacity.value = withSequence(
       withTiming(0.35, { duration: 80 }),
       withTiming(0, { duration: 300 }),
     );
 
-    const timeout = setTimeout(() => {
-      onDismiss();
-    }, 400);
+    const timeout = setTimeout(onDismiss, 400);
     return () => clearTimeout(timeout);
   }, [column]);
 
-  if (column === null) return null;
-
-  const left = columnLeft(column);
+  const left = columnLeft(lastColumn.current);
 
   const animStyle = useAnimatedStyle(() => ({
-    position: 'absolute',
-    left: left,
+    position: 'absolute' as const,
+    left,
     top: 0,
     width: columnWidth,
     height: boardHeight,
@@ -70,6 +64,7 @@ export function IllegalMoveFeedback({
     zIndex: 8000,
   }));
 
+  // Always render — invisible when no flash
   return (
     <Animated.View style={animStyle} pointerEvents="none" />
   );

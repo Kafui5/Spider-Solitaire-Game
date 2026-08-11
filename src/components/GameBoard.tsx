@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 
 import type { GameState, Hint, MoveSelection } from '../game/gameEngine';
 import { isMovableRun } from '../game/gameEngine';
@@ -93,15 +93,20 @@ export function GameBoard({
     [onCardPress],
   );
 
+  const Wrapper = Platform.OS === 'web' ? View : ScrollView;
+  const wrapperProps = Platform.OS === 'web' 
+    ? { style: [styles.horizontalContent, { minWidth: boardWidth }] }
+    : {
+        ref: scrollViewRef,
+        horizontal: true,
+        bounces: false,
+        scrollEnabled: !isDragging,
+        contentContainerStyle: [styles.horizontalContent, { minWidth: boardWidth }],
+        showsHorizontalScrollIndicator: false,
+      };
+
   return (
-    <ScrollView
-      ref={scrollViewRef}
-      horizontal
-      bounces={false}
-      scrollEnabled={!isDragging}
-      contentContainerStyle={[styles.horizontalContent, { minWidth: boardWidth }]}
-      showsHorizontalScrollIndicator={false}
-    >
+    <Wrapper {...(wrapperProps as any)}>
       <View style={[styles.board, { minHeight: availableHeight, width: boardWidth }]}>
         {/* Decorative spider webs */}
         <CornerWeb position="topLeft" />
@@ -131,10 +136,9 @@ export function GameBoard({
           );
 
           return (
-            <Pressable
+            <View
               accessibilityLabel={`Tableau column ${columnIndex + 1}`}
               key={columnIndex}
-              onPress={() => onColumnPress(columnIndex)}
               style={[
                 styles.column,
                 {
@@ -144,13 +148,15 @@ export function GameBoard({
                 },
               ]}
             >
-              <View
+              <Pressable
+                onPress={Platform.OS === 'web' ? undefined : () => onColumnPress(columnIndex)}
+                onPressIn={Platform.OS === 'web' ? () => onColumnPress(columnIndex) : undefined}
                 style={[styles.emptySlot, { borderRadius: 6, height: cardWidth * 1.42 }]}
               />
               {column.map((card, cardIndex) => {
                 const isMovable = card.faceUp && isMovableRun(column, cardIndex);
 
-                if (card.faceUp && isMovable) {
+                if (card.faceUp && isMovable && Platform.OS !== 'web') {
                   return (
                     <View
                       key={card.id}
@@ -162,7 +168,7 @@ export function GameBoard({
                         width={cardWidth}
                         selected={
                           selected?.column === columnIndex &&
-                          selected.cardIndex === cardIndex
+                          cardIndex >= selected.cardIndex
                         }
                         hinted={
                           hint?.column === columnIndex && hint.cardIndex === cardIndex
@@ -181,29 +187,28 @@ export function GameBoard({
                 return (
                   <View
                     key={card.id}
-                    pointerEvents="box-none"
-                    style={[styles.cardPosition, { top: positions[cardIndex] }]}
+                    style={[styles.cardPosition, { top: positions[cardIndex], zIndex: cardIndex }]}
                   >
                     <PlayingCard
                       card={card}
                       width={cardWidth}
                       selected={
                         selected?.column === columnIndex &&
-                        selected.cardIndex === cardIndex
+                        cardIndex >= selected.cardIndex
                       }
                       hinted={
                         hint?.column === columnIndex && hint.cardIndex === cardIndex
                       }
-                      onPress={() => onCardPress(columnIndex, cardIndex)}
+                      onPress={() => { console.log('CARD PRESSED', columnIndex, cardIndex); onCardPress(columnIndex, cardIndex); }}
                     />
                   </View>
                 );
               })}
-            </Pressable>
+            </View>
           );
         })}
       </View>
-    </ScrollView>
+    </Wrapper>
   );
 }
 
@@ -213,7 +218,6 @@ const styles = StyleSheet.create({
   },
   board: {
     backgroundColor: colors.felt,
-    overflow: 'hidden',
     position: 'relative',
   },
   column: {

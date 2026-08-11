@@ -8,6 +8,9 @@ import {
   View,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Platform } from 'react-native';
+
+const RootWrapper = Platform.OS === 'web' ? View : GestureHandlerRootView;
 import { StatusBar } from 'expo-status-bar';
 
 import type { CardBackId } from './src/cardBacks';
@@ -284,124 +287,152 @@ export default function App() {
 
   // --- Win handler with full reward processing ---
   function handleWin(wonGame: GameState) {
-    const timeSeconds = Math.max(0, Math.floor((Date.now() - wonGame.startedAt) / 1000));
+    try {
+      const timeSeconds = Math.max(0, Math.floor((Date.now() - wonGame.startedAt) / 1000));
 
-    const performance: GamePerformance = {
-      difficulty: wonGame.difficulty,
-      moves: wonGame.moves,
-      timeSeconds,
-      usedHints: hintsUsed,
-      usedUndos: undosUsed,
-      runsCompleted: wonGame.completed,
-      sequenceStreaks,
-      won: true,
-      isDailyChallenge,
-    };
+      const performance: GamePerformance = {
+        difficulty: wonGame.difficulty,
+        moves: wonGame.moves,
+        timeSeconds,
+        usedHints: hintsUsed,
+        usedUndos: undosUsed,
+        runsCompleted: wonGame.completed,
+        sequenceStreaks,
+        won: true,
+        isDailyChallenge,
+      };
 
-    // Calculate rewards
-    const reward = calculateReward(performance, rewardsData.profile);
+      // Calculate rewards
+      const reward = calculateReward(performance, rewardsData.profile);
 
-    // Check challenge card
-    let challengeCompleted = false;
-    let challengeBonus = 0;
-    if (activeChallenge) {
-      challengeCompleted = checkChallengeComplete(activeChallenge, performance);
-      if (challengeCompleted) {
-        challengeBonus = activeChallenge.bonusThreads;
+      // Check challenge card
+      let challengeCompleted = false;
+      let challengeBonus = 0;
+      if (activeChallenge) {
+        challengeCompleted = checkChallengeComplete(activeChallenge, performance);
+        if (challengeCompleted) {
+          challengeBonus = activeChallenge.bonusThreads;
+        }
       }
-    }
 
-    // Apply reward to profile
-    let updatedData = { ...rewardsData };
-    const updatedProfile = applyReward(rewardsData.profile, reward, performance);
-    updatedData.profile = updatedProfile;
+      // Apply reward to profile
+      let updatedData = { ...rewardsData };
+      const updatedProfile = applyReward(rewardsData.profile, reward, performance);
+      updatedData.profile = updatedProfile;
 
-    // Add challenge bonus threads
-    if (challengeBonus > 0) {
-      updatedData.profile = { ...updatedData.profile, silkThreads: updatedData.profile.silkThreads + challengeBonus };
-    }
-
-    // Update mastery
-    updatedData.mastery = addMasteryXP(rewardsData.mastery, wonGame.difficulty, reward.baseXP);
-
-    // Check achievements
-    const newAchievements = checkAchievements(performance, updatedData.profile, updatedData.mastery, rewardsData.achievements);
-    for (const { achievement } of newAchievements) {
-      updatedData.achievements.achievements[achievement.id] = { unlocked: true, unlockedAt: Date.now() };
-      updatedData.profile.silkThreads += achievement.threadReward;
-      updatedData.profile.totalXP += achievement.xpReward;
-    }
-    updatedData.achievements = { ...updatedData.achievements };
-
-    // Contribute to gallery
-    const galleryResult = autoContributeThreads(rewardsData.gallery, reward.totalThreads);
-    updatedData.gallery = galleryResult.gallery;
-
-    // Generate web pattern
-    const pattern = generateWebPattern(performance);
-    updatedData = addWebPattern(updatedData, pattern);
-
-    // Save
-    setRewardsData(updatedData);
-    saveRewardsData(updatedData).catch(() => undefined);
-
-    // Record in legacy stats too
-    markChallengeComplete(wonGame.moves, timeSeconds).catch(() => undefined);
-
-    // Set summary data
-    setLastReward(reward);
-    setLastPerformance(performance);
-    setLastNewAchievements(newAchievements);
-    setLastGalleryContributions(galleryResult.contributions);
-    setLastChallengeCompleted(challengeCompleted);
-
-    // Trigger celebration
-    hapticSuccess();
-    setShowWinCelebration(true);
-    setTimeout(() => setShowRewardSummary(true), 2000);
-
-    // Track game completion for upgrade prompt timing
-    setPurchaseState((prev) => {
-      const next = recordGameCompleted(prev);
-      savePurchaseState(next).catch(() => undefined);
-      // Show upgrade after 5 completed games if not premium
-      if (shouldShowUpgradePrompt(next) && !next.upgradePromptDismissed) {
-        setTimeout(() => setShowUpgrade(true), 3500);
+      // Add challenge bonus threads
+      if (challengeBonus > 0) {
+        updatedData.profile = { ...updatedData.profile, silkThreads: updatedData.profile.silkThreads + challengeBonus };
       }
-      return next;
-    });
+
+      // Update mastery
+      updatedData.mastery = addMasteryXP(rewardsData.mastery, wonGame.difficulty, reward.baseXP);
+
+      // Check achievements (safe)
+      try {
+        const newAchievements = checkAchievements(performance, updatedData.profile, updatedData.mastery, rewardsData.achievements);
+        for (const { achievement } of newAchievements) {
+          updatedData.achievements.achievements[achievement.id] = { unlocked: true, unlockedAt: Date.now() };
+          updatedData.profile.silkThreads += achievement.threadReward;
+          updatedData.profile.totalXP += achievement.xpReward;
+        }
+        updatedData.achievements = { ...updatedData.achievements };
+        setLastNewAchievements(newAchievements);
+      } catch { setLastNewAchievements([]); }
+
+      // Contribute to gallery (safe)
+      try {
+        const galleryResult = autoContributeThreads(rewardsData.gallery, reward.totalThreads);
+        updatedData.gallery = galleryResult.gallery;
+        setLastGalleryContributions(galleryResult.contributions);
+      } catch { setLastGalleryContributions([]); }
+
+      // Generate web pattern (safe)
+      try {
+        const pattern = generateWebPattern(performance);
+        updatedData = addWebPattern(updatedData, pattern);
+      } catch { /* skip pattern */ }
+
+      // Save
+      setRewardsData(updatedData);
+      saveRewardsData(updatedData).catch(() => undefined);
+
+      // Set summary data
+      setLastReward(reward);
+      setLastPerformance(performance);
+      setLastChallengeCompleted(challengeCompleted);
+
+      // Trigger celebration
+      hapticSuccess();
+      setShowWinCelebration(true);
+      setTimeout(() => setShowRewardSummary(true), 2000);
+
+      // Track game completion for upgrade prompt timing
+      setPurchaseState((prev) => {
+        const next = recordGameCompleted(prev);
+        savePurchaseState(next).catch(() => undefined);
+        if (shouldShowUpgradePrompt(next) && !next.upgradePromptDismissed) {
+          setTimeout(() => setShowUpgrade(true), 3500);
+        }
+        return next;
+      });
+    } catch (e) {
+      // Prevent crash — just show win without rewards
+      console.warn('handleWin error:', e);
+      hapticSuccess();
+      setShowWinCelebration(true);
+    }
   }
 
   // --- Move handlers ---
   function tryMove(destination: number) {
-    if (!game || !selected) return false;
-    const next = moveCards(game, selected.column, selected.cardIndex, destination);
-    if (!next) return false;
-    hapticMedium();
-    commit(next);
+    try {
+      if (!game || !selected) return false;
+      const next = moveCards(game, selected.column, selected.cardIndex, destination);
+      if (!next) return false;
+      hapticMedium();
+      commit(next);
 
-    if (next.completed > game.completed) {
-      hapticHeavy();
-      setSequenceStreaks((s) => s + 1);
+      if (next.completed > game.completed) {
+        hapticHeavy();
+        setSequenceStreaks((s) => s + 1);
+      }
+      if (next.status === 'won') {
+        handleWin(next);
+      }
+      return true;
+    } catch (e) {
+      console.warn('tryMove error:', e);
+      return false;
     }
-    if (next.status === 'won') {
-      handleWin(next);
-    }
-    return true;
   }
 
+  const lastPressTime = { current: 0 };
   function handleCardPress(column: number, cardIndex: number) {
+    const now = Date.now();
+    if (now - lastPressTime.current < 300) return;
+    lastPressTime.current = now;
+    console.log('handleCardPress', { column, cardIndex, selected, gameExists: !!game });
     if (!game) return;
-    if (selected && tryMove(column)) return;
+    if (selected) {
+      console.log('Attempting move from', selected, 'to column', column);
+      if (tryMove(column)) {
+        console.log('Move succeeded!');
+        return;
+      }
+      console.log('Move failed');
+    }
     if (selected?.column === column && selected.cardIndex === cardIndex) {
       setSelected(null);
       return;
     }
     if (isMovableRun(game.columns[column], cardIndex)) {
       hapticLight();
+      console.log('Selected card at', column, cardIndex);
       setSelected({ column, cardIndex });
       setHint(null);
     } else {
+      console.log('Not a movable run at', column, cardIndex);
       setSelected(null);
     }
   }
@@ -424,7 +455,7 @@ export default function App() {
       if (!next) return false;
       hapticMedium();
       commit(next);
-      if (next.completed > game.completed) {
+      if (next.completed > (game?.completed ?? 0)) {
         hapticHeavy();
         setSequenceStreaks((s) => s + 1);
       }
@@ -433,7 +464,7 @@ export default function App() {
       }
       return true;
     },
-    [game, hintsUsed, undosUsed, sequenceStreaks, isDailyChallenge, activeChallenge, rewardsData],
+    [game],
   );
 
   const handleIllegalMove = useCallback(() => { hapticError(); }, []);
@@ -501,7 +532,7 @@ export default function App() {
   // Challenge picker screen
   if (screen === 'challenge_pick') {
     return (
-      <GestureHandlerRootView style={styles.gestureRoot}>
+      <RootWrapper style={styles.gestureRoot}>
         <SafeAreaView style={styles.safeArea}>
           <StatusBar style="light" />
           <ChallengeCardPicker
@@ -511,14 +542,14 @@ export default function App() {
             onSkip={() => beginGameWithChallenge(null)}
           />
         </SafeAreaView>
-      </GestureHandlerRootView>
+      </RootWrapper>
     );
   }
 
   // Home screen
   if (screen === 'home') {
     return (
-      <GestureHandlerRootView style={styles.gestureRoot}>
+      <RootWrapper style={styles.gestureRoot}>
         <SafeAreaView style={styles.safeArea}>
           <StatusBar style="light" />
           <StartScreen
@@ -568,7 +599,7 @@ export default function App() {
             onClose={() => setShowSupporterPacks(false)}
           />
         </SafeAreaView>
-      </GestureHandlerRootView>
+      </RootWrapper>
     );
   }
 
@@ -576,7 +607,7 @@ export default function App() {
 
   // Game screen
   return (
-    <GestureHandlerRootView style={styles.gestureRoot}>
+    <RootWrapper style={styles.gestureRoot}>
       <SafeAreaView style={styles.safeArea}>
         <StatusBar style="light" />
         <View style={styles.header}>
@@ -710,7 +741,7 @@ export default function App() {
         <LoomGalleryScreen visible={showGallery} gallery={rewardsData.gallery} onClose={() => setShowGallery(false)} />
         <ShopScreen visible={showShop} threadBalance={rewardsData.profile.silkThreads} unlockedCosmetics={rewardsData.unlockedCosmetics} onPurchase={handlePurchase} onClose={() => setShowShop(false)} />
       </SafeAreaView>
-    </GestureHandlerRootView>
+    </RootWrapper>
   );
 }
 
