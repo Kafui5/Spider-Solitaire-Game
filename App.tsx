@@ -28,6 +28,7 @@ import { AchievementsScreen } from './src/components/AchievementsScreen';
 import { LoomGalleryScreen } from './src/components/LoomGalleryScreen';
 import { ShopScreen } from './src/components/ShopScreen';
 import { ChallengeCardPicker } from './src/components/ChallengeCardPicker';
+import { canAutoComplete, getAutoCompleteMoves } from './src/game/autoComplete';
 import {
   canDeal,
   canMove,
@@ -135,6 +136,7 @@ export default function App() {
   const [showShop, setShowShop] = useState(false);
   const [showRewardSummary, setShowRewardSummary] = useState(false);
   const [showWinCelebration, setShowWinCelebration] = useState(false);
+  const [showAutoComplete, setShowAutoComplete] = useState(false);
 
   // Reward summary data (set on win)
   const [lastReward, setLastReward] = useState<GameReward | null>(null);
@@ -283,6 +285,30 @@ export default function App() {
     setGame(next);
     setSelected(null);
     setHint(null);
+    // Check for auto-complete after each move
+    if (canAutoComplete(next) && next.status === 'playing') {
+      setShowAutoComplete(true);
+    }
+  }
+
+  function executeAutoComplete() {
+    if (!game) return;
+    setShowAutoComplete(false);
+    const moves = getAutoCompleteMoves(game);
+    let current = game;
+    for (const move of moves) {
+      const next = moveCards(current, move.fromColumn, move.cardIndex, move.toColumn);
+      if (next) {
+        current = next;
+      } else {
+        break;
+      }
+    }
+    setGame(current);
+    setHistory([]);
+    if (current.status === 'won') {
+      handleWin(current);
+    }
   }
 
   // --- Win handler with full reward processing ---
@@ -655,6 +681,20 @@ export default function App() {
             onDragMove={handleDragMove}
             onIllegalMove={handleIllegalMove}
           />
+
+          {showAutoComplete && game.status === 'playing' && (
+            <View style={styles.winOverlay}>
+              <Text style={styles.winEyebrow}>ALL CARDS REVEALED</Text>
+              <Text style={styles.winTitle}>Auto-complete?</Text>
+              <Text style={styles.winCopy}>All cards are face-up. Finish automatically?</Text>
+              <Pressable onPress={executeAutoComplete} style={{ backgroundColor: '#E6B95C', borderRadius: 12, marginTop: 24, paddingHorizontal: 30, paddingVertical: 13 }}>
+                <Text style={{ color: '#07130F', fontSize: 16, fontWeight: '900' }}>Complete Now</Text>
+              </Pressable>
+              <Pressable onPress={() => setShowAutoComplete(false)} style={{ marginTop: 12, padding: 10 }}>
+                <Text style={{ color: colors.muted, fontSize: 13 }}>I'll finish manually</Text>
+              </Pressable>
+            </View>
+          )}
 
           {game.status === 'won' && (
             <View style={styles.winOverlay}>

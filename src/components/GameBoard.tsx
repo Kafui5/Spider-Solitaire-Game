@@ -93,9 +93,9 @@ export function GameBoard({
     [onCardPress],
   );
 
-  const Wrapper = Platform.OS === 'web' ? View : ScrollView;
+  const Wrapper = Platform.OS === 'web' ? ScrollView : ScrollView;
   const wrapperProps = Platform.OS === 'web' 
-    ? { style: [styles.horizontalContent, { minWidth: boardWidth }] }
+    ? { style: { flex: 1 }, contentContainerStyle: [styles.horizontalContent, { minWidth: boardWidth }] }
     : {
         ref: scrollViewRef,
         horizontal: true,
